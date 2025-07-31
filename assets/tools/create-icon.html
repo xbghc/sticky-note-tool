@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Tray Icon</title>
+</head>
+<body>
+    <canvas id="canvas" width="32" height="32" style="border: 1px solid #ccc; image-rendering: pixelated; width: 128px; height: 128px;"></canvas>
+    <br><br>
+    <button onclick="downloadIcon()">下载图标</button>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 绘制便签图标
+        function drawIcon() {
+            // 清空画布
+            ctx.clearRect(0, 0, 32, 32);
+            
+            // 绘制便签纸背景 (黄色)
+            ctx.fillStyle = '#FFE066';
+            ctx.fillRect(4, 6, 24, 22);
+            
+            // 绘制阴影
+            ctx.fillStyle = '#DDD';
+            ctx.fillRect(6, 8, 24, 22);
+            
+            // 重新绘制便签纸
+            ctx.fillStyle = '#FFE066';
+            ctx.fillRect(4, 6, 24, 20);
+            
+            // 绘制折角
+            ctx.fillStyle = '#E6CC5A';
+            ctx.beginPath();
+            ctx.moveTo(24, 6);
+            ctx.lineTo(28, 6);  
+            ctx.lineTo(28, 10);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制折角线
+            ctx.strokeStyle = '#D4B84A';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(24, 6);
+            ctx.lineTo(24, 10);
+            ctx.lineTo(28, 10);
+            ctx.stroke();
+            
+            // 绘制文字线条
+            ctx.fillStyle = '#666';
+            ctx.fillRect(8, 12, 16, 1);
+            ctx.fillRect(8, 15, 12, 1);
+            ctx.fillRect(8, 18, 14, 1);
+            ctx.fillRect(8, 21, 10, 1);
+        }
+        
+        function downloadIcon() {
+            const link = document.createElement('a');
+            link.download = 'tray-icon.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        drawIcon();
+    </script>
+</body>
+</html>

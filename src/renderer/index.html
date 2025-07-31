@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>便签工具</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <input type="text" id="sentenceInput" placeholder="输入句子..." autofocus>
+            <button id="addBtn">添加</button>
+        </div>
+        
+        <div class="sentence-list" id="sentenceList">
+            <!-- 句子列表将在这里显示 -->
+        </div>
+        
+        <div class="footer">
+            <button id="clearAllBtn">
+                <span class="btn-text">清空全部</span>
+                <span class="btn-icon">🗑️</span>
+            </button>
+            <button id="hideBtn">
+                <span class="btn-text">隐藏</span>
+                <span class="btn-icon">👁️</span>
+            </button>
+        </div>
+    </div>
+    
+    <script src="renderer.js"></script>
+</body>
+</html>

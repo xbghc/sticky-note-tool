@@ -15,7 +15,7 @@ interface WindowState {
   height: number;
 }
 
-const windowStatePath = path.join(__dirname, 'window-state.json');
+const windowStatePath = path.join(app.getPath('userData'), 'window-state.json');
 
 function loadWindowState(): WindowState {
   try {
@@ -88,13 +88,19 @@ function createWindow(): void {
 
   require('@electron/remote/main').enable(mainWindow.webContents);
 
-  mainWindow.loadFile(path.join(__dirname, '../../src/renderer/index.html'));
+  const htmlPath = path.join(app.getAppPath(), 'src/renderer/index.html');
+  mainWindow.loadFile(htmlPath);
 
   mainWindow.on('close', () => {
     saveWindowState();
   });
 
   mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+
+  mainWindow.webContents.on('render-process-gone', (event, details) => {
+    console.error('Renderer process gone:', details);
     mainWindow = null;
   });
 
@@ -109,7 +115,8 @@ function createWindow(): void {
 function createTray(): void {
   if (tray) return;
   
-  const icon = nativeImage.createFromPath(path.join(__dirname, '../../assets/icon.png')).resize({ width: 16, height: 16 });
+  const iconPath = path.join(app.getAppPath(), 'assets/icon.png');
+  const icon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 });
   tray = new Tray(icon);
   
   tray.setToolTip('便签工具');
@@ -162,9 +169,7 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  app.quit();
 });
 
 app.on('activate', () => {
@@ -173,8 +178,16 @@ app.on('activate', () => {
   }
 });
 
+app.on('before-quit', () => {
+  saveWindowState();
+});
+
 app.on('will-quit', () => {
   globalShortcut.unregisterAll();
+  if (tray) {
+    tray.destroy();
+    tray = null;
+  }
 });
 
 Menu.setApplicationMenu(null);

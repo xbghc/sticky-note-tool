@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, Tray, nativeImage, globalShortcut } from 'electron';
+import { app, BrowserWindow, Menu, Tray, nativeImage, globalShortcut, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -24,7 +24,7 @@ function loadWindowState(): WindowState {
       return JSON.parse(data);
     }
   } catch (e) {
-    console.error('Failed to load window state:', e);
+    // 加载窗口状态失败，使用默认值
   }
   
   return {
@@ -49,7 +49,7 @@ function saveWindowState(): void {
     
     fs.writeFileSync(windowStatePath, JSON.stringify(windowState, null, 2));
   } catch (e) {
-    console.error('Failed to save window state:', e);
+    // 保存窗口状态失败，忽略错误
   }
 }
 
@@ -145,10 +145,19 @@ app.whenReady().then(() => {
   // 注册全局快捷键 Ctrl + Shift + C (切换显示/隐藏)
   const ret = globalShortcut.register('CommandOrControl+Shift+C', toggleWindow);
   
-  if (ret) {
-    console.log('Ctrl + Shift + C 快捷键注册成功');
-  } else {
-    console.log('快捷键注册失败');
+  if (!ret) {
+    // 快捷键注册失败，但不影响程序运行
+  }
+
+  // 注册全局快捷键 Ctrl + Shift + I (弹出第一行)
+  const ret2 = globalShortcut.register('CommandOrControl+Shift+I', () => {
+    if (mainWindow) {
+      mainWindow.webContents.send('pop-first-sentence');
+    }
+  });
+  
+  if (!ret2) {
+    // 快捷键注册失败，但不影响程序运行
   }
 });
 

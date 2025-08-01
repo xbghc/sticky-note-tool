@@ -73,14 +73,17 @@ button {
 .sentence-item {
     background: rgba(255, 255, 255, 0.9);
     margin-bottom: 4px;
-    padding: 5px 8px;
+    padding: 5px calc(8px - 0.5ch) 5px 8px;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s;
-    word-wrap: break-word;
     position: relative;
     font-size: 12px;
     line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
 }
 
 .sentence-item:hover {

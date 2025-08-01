@@ -79,6 +79,7 @@ class StickyNoteApp {
         this.sentences.forEach(sentence => {
             const div = document.createElement('div');
             div.className = 'sentence-item';
+            div.title = sentence.text;
             div.innerHTML = `
                 <span>${this.escapeHtml(sentence.text)}</span>
                 <button class="delete-btn" onclick="app.deleteSentence(${sentence.id})">×</button>

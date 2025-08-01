@@ -94,15 +94,17 @@ button {
 
 .sentence-item .delete-btn {
     position: absolute;
-    top: 5px;
+    top: 50%;
     right: 5px;
+    transform: translateY(-50%);
+    aspect-ratio: 1;
+    width: 1.5em;
+    height: unset;
     background: #ff4757;
     color: white;
     border: none;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
+    padding: 0;
     cursor: pointer;
     display: none;
     align-items: center;

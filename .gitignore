@@ -76,11 +76,18 @@ web_modules/
 
 # Next.js build output
 .next
-out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+
+# Electron build output
+out/
+dist/
+release/
+releases/
+
+# Generated icon files (keep only source icons)
+assets/icons/
 
 # Gatsby files
 .cache/

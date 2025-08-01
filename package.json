@@ -6,13 +6,18 @@
   "author": "xbghc",
   "main": "dist/main/main.js",
   "scripts": {
+    "prebuild": "npm run generate-icons && npm run convert-icons",
     "build": "tsc",
     "start": "electron-forge start",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "package:windows": "npm run build && electron-forge package --arch=x64 --platform=win32 && electron-forge package --arch=arm64 --platform=win32",
-    "make:windows": "npm run build && electron-forge make --arch=x64 --platform=win32 && electron-forge make --arch=arm64 --platform=win32"
+    "package": "electron-forge package && npm run organize-dist",
+    "make": "electron-forge make && npm run organize-dist",
+    "package:windows": "npm run build && electron-forge package --arch=x64 --platform=win32 && electron-forge package --arch=arm64 --platform=win32 && npm run organize-dist",
+    "make:windows": "npm run build && electron-forge make --arch=x64 --platform=win32 && electron-forge make --arch=arm64 --platform=win32 && npm run organize-dist",
+    "organize-dist": "node scripts/organize-dist.js",
+    "generate-icons": "node scripts/generate-icons.js",
+    "convert-icons": "node scripts/icon-converter.js",
+    "release:windows": "npm run package:windows && npm run make:windows"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.8.2",
@@ -25,8 +30,12 @@
     "@electron/fuses": "^1.8.0",
     "@types/node": "^24.1.0",
     "electron": "^37.2.5",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.34.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3",
+    "zip-a-folder": "^3.1.9"
   },
   "dependencies": {
     "@electron/remote": "^2.1.3",

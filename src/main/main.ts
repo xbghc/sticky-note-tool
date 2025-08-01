@@ -2,6 +2,11 @@ import { app, BrowserWindow, Menu, Tray, nativeImage, globalShortcut, ipcMain } 
 import * as path from 'path';
 import * as fs from 'fs';
 
+// 处理 Squirrel 安装程序事件
+if (require('electron-squirrel-startup')) {
+  app.quit();
+}
+
 // 禁用 GPU 缓存错误
 app.commandLine.appendSwitch('disable-gpu-shader-disk-cache');
 app.commandLine.appendSwitch('disable-gpu');
@@ -80,6 +85,7 @@ function createWindow(): void {
     alwaysOnTop: true,
     resizable: true,
     skipTaskbar: false,
+    icon: path.join(app.getAppPath(), 'assets/icons/256x256.png'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -115,7 +121,7 @@ function createWindow(): void {
 function createTray(): void {
   if (tray) return;
   
-  const iconPath = path.join(app.getAppPath(), 'assets/icon.png');
+  const iconPath = path.join(app.getAppPath(), 'assets/icons/32x32.png');
   const icon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 });
   tray = new Tray(icon);
   

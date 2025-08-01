@@ -1,4 +1,5 @@
-const { clipboard, ipcRenderer } = require('electron');
+const { ipcRenderer } = require('electron');
+const { clipboardService: clipboard } = require('../../dist/renderer/services/clipboardService');
 
 class StickyNoteApp {
     constructor() {
@@ -55,7 +56,7 @@ class StickyNoteApp {
     copySentence(id) {
         const sentence = this.sentences.find(s => s.id === id);
         if (sentence) {
-            clipboard.writeText(sentence.text);
+            clipboard.copy(sentence.text);
             this.deleteSentence(id);
         }
     }
@@ -79,6 +80,7 @@ class StickyNoteApp {
         this.sentences.forEach(sentence => {
             const div = document.createElement('div');
             div.className = 'sentence-item';
+            div.title = sentence.text;
             div.innerHTML = `
                 <span>${this.escapeHtml(sentence.text)}</span>
                 <button class="delete-btn" onclick="app.deleteSentence(${sentence.id})">×</button>
@@ -129,7 +131,7 @@ class StickyNoteApp {
             const firstSentence = this.sentences[0];
             
             // 复制到剪贴板
-            clipboard.writeText(firstSentence.text);
+            clipboard.copy(firstSentence.text);
             
             // 删除第一个句子
             this.sentences.shift();
@@ -137,7 +139,7 @@ class StickyNoteApp {
             this.renderSentences();
             
             // 使用粘贴功能
-            await this.paste();
+            await clipboard.paste();
             
         } catch (error) {
             // 如果自动输入失败，至少内容已经在剪贴板中，用户可以手动粘贴
@@ -145,44 +147,6 @@ class StickyNoteApp {
         }
     }
 
-    async paste() {
-        if (process.platform === 'win32') {
-            // Windows: 使用 VBScript 自动粘贴
-            try {
-                const { exec } = require('child_process');
-                const fs = require('fs');
-                const path = require('path');
-                const os = require('os');
-                
-                // 创建一个极简的 VBScript 文件
-                const vbsContent = 'CreateObject("WScript.Shell").SendKeys "^v"';
-                const tempFile = path.join(os.tmpdir(), 'paste_' + Date.now() + '.vbs');
-                
-                // 写入文件并立即执行
-                fs.writeFileSync(tempFile, vbsContent);
-                
-                // 使用 wscript 执行（比 cscript 更快，无控制台窗口）
-                exec(`wscript //B //NoLogo "${tempFile}"`, () => {
-                    // 异步删除临时文件
-                    fs.unlink(tempFile, () => {});
-                });
-                
-                this.showStatus('已执行自动粘贴');
-                
-            } catch (error) {
-                // 如果 VBScript 失败，回退到 PowerShell
-                const { exec } = require('child_process');
-                exec(`powershell -NoProfile -Command "[System.Windows.Forms.SendKeys]::SendWait('^v')"`, { windowsHide: true });
-                this.showStatus('已执行粘贴（备用）');
-            }
-        } else if (process.platform === 'darwin') {
-            // macOS: 仅复制，提示用户手动粘贴
-            this.showStatus('内容已复制到剪贴板，请按 Cmd+V 粘贴');
-        } else {
-            // Linux: 仅复制，提示用户手动粘贴
-            this.showStatus('内容已复制到剪贴板，请按 Ctrl+V 粘贴');
-        }
-    }
     
     showStatus(message) {
         // 在页面上显示状态信息
